@@ -38,7 +38,6 @@ function knapsack(tasks, maxHours) {
         if (dp[i][h] !== dp[i - 1][h]) {
 
             selectedTasks.push(tasks[i - 1]);
-
             h -= tasks[i - 1].Duration;
 
         }

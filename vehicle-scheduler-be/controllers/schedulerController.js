@@ -8,25 +8,23 @@ const getOptimalSchedule = async (req, res) => {
 
         const depotId = Number(req.params.depotId);
 
-        console.log("Fetching depots...");
         const depots = await getDepots();
 
-        console.log("Fetching vehicles...");
-        const vehicleResponse = await getVehicles();
-
-        console.log(vehicleResponse);
-
-        const vehicles = vehicleResponse.vehicles || vehicleResponse;
-
         const depot = depots.find(
-            d => d.ID === depotId
+            depot => depot.ID === depotId
         );
 
         if (!depot) {
+
             return res.status(404).json({
                 message: "Depot not found"
             });
+
         }
+
+        const vehicleResponse = await getVehicles();
+
+        const vehicles = vehicleResponse.vehicles || vehicleResponse;
 
         const result = knapsack(
             vehicles,
@@ -34,7 +32,7 @@ const getOptimalSchedule = async (req, res) => {
         );
 
         res.status(200).json({
-            depotId,
+            depotId: depot.ID,
             mechanicHours: depot.MechanicHours,
             totalImpact: result.totalImpact,
             selectedTasks: result.selectedTasks
@@ -42,14 +40,12 @@ const getOptimalSchedule = async (req, res) => {
 
     } catch (error) {
 
-        console.log("ERROR:", error.response?.data);
-
         res.status(500).json({
-            message: error.message,
-            details: error.response?.data
+            message: error.message
         });
 
     }
+
 };
 
 module.exports = {
